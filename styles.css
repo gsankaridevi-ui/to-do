@@ -37,7 +37,7 @@
   --shadow-md: 0 2px 4px rgb(23 26 32 / 4%), 0 8px 20px rgb(23 26 32 / 6%);
   --shadow-pop: 0 10px 30px rgb(23 26 32 / 12%);
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, "Helvetica Neue", sans-serif;
   --fs-small: 12.5px;
   --fs-base: 14.5px;
   --fs-h3: 16px;

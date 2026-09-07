@@ -651,18 +651,44 @@
     if (event.key === "Escape") closeMenu();
   });
 
-  root.querySelector("[data-export]").addEventListener("click", () => {
-    closeMenu();
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const BACKUP_NAME = "weekly-planner-backup.json";
+
+  const downloadBackup = json => {
+    const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "weekly-planner-backup.json";
+    link.download = BACKUP_NAME;
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
     announce("Backup downloaded.");
+  };
+
+  root.querySelector("[data-export]").addEventListener("click", async () => {
+    closeMenu();
+    const json = JSON.stringify(state, null, 2);
+    // Some hosts (a published Claude artifact, for one) block a page from
+    // starting its own download and mediate saves instead.
+    if (window.claude && typeof window.claude.use === "function") {
+      try {
+        const downloads = await window.claude.use("downloads");
+        if (downloads) {
+          await downloads.save({ filename: BACKUP_NAME, data: json });
+          announce("Backup saved.");
+          return;
+        }
+      } catch (error) {
+        announce(
+          error && error.code === "declined"
+            ? "Backup cancelled."
+            : "The backup could not be saved here."
+        );
+        return;
+      }
+    }
+    downloadBackup(json);
   });
 
   const importInput = root.querySelector("[data-import-input]");
